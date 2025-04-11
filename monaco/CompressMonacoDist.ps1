@@ -9,4 +9,4 @@ $sources = @(
     "$monacoDistDir\*.html"
     "$monacoDistDir\*.ttf"
 )
-Compress-Archive -Path $sources -DestinationPath $targetFilename -CompressionLevel Optimal
+Compress-Archive -Path $sources -DestinationPath $targetFilename -CompressionLevel Optimal -Force

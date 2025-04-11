@@ -16,6 +16,7 @@
         <TextBox x:Name="txtURL" 
                  Margin="10"
                  KeyDown="txtURL_KeyDown"  />
-        <ye:CodeEditor x:Name="editor" Grid.Row="1" Margin="10"/>
+        <ye:CodeEditor x:Name="editor" Grid.Row="1" Margin="10"
+                       UseDevelopmentProxy="False" />
     </Grid>
 </Window>

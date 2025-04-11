@@ -26,7 +26,7 @@ namespace Mastersign.WpfCodeEditor
             archive = new ZipArchive(stream, ZipArchiveMode.Read, leaveOpen: false);
         }
 
-        public virtual CompressedResource GetResource(string path)
+        public virtual WebResource GetResource(string path)
         {
             ZipArchiveEntry entry;
             try
@@ -43,16 +43,7 @@ namespace Mastersign.WpfCodeEditor
             var contentType = contentTypes.TryGetValue(ext, out var ct)
                 ? ct
                 : "application/octet-stream";
-            return new CompressedResource(entry.Open(), entry.Length, contentType);
+            return new WebResource(entry.Open(), entry.Length, contentType);
         }
-    }
-
-    internal sealed class CompressedResource(Stream resourceStream, long contentLength, string contentType)
-    {
-        public Stream ResourceStream { get; } = resourceStream;
-
-        public long ContentLength { get; } = contentLength;
-
-        public string ContentType { get; } = contentType;
     }
 }

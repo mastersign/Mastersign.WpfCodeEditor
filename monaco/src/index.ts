@@ -3,9 +3,11 @@ import * as monaco from 'monaco-editor'
 import { ILanguageFeaturesService } from 'monaco-editor/esm/vs/editor/common/services/languageFeatures.js'
 import { OutlineModel } from 'monaco-editor/esm/vs/editor/contrib/documentSymbols/browser/outlineModel.js'
 import { StandaloneServices } from 'monaco-editor/esm/vs/editor/standalone/browser/standaloneServices.js'
-import { configureMonacoYaml, type SchemasSettings } from 'monaco-yaml'
+import { configureMonacoYaml } from 'monaco-yaml'
 
 import './index.css'
+
+const wpfControl: any = chrome?.webview?.hostObjects?.wpfControl
 
 window.MonacoEnvironment = {
   getWorker(moduleId, label) {
@@ -23,8 +25,7 @@ window.MonacoEnvironment = {
       //     new URL('monaco-editor/esm/vs/language/html/html.worker', import.meta.url)
       //   )
       case 'json':
-        return new Worker(
-          new URL('monaco-editor/esm/vs/language/json/json.worker', import.meta.url)
+        return new Worker(new URL('monaco-editor/esm/vs/language/json/json.worker', import.meta.url)
         )
       // case 'javascript':
       // case 'typescript':
@@ -40,48 +41,46 @@ window.MonacoEnvironment = {
 }
 
 const monacoYaml = configureMonacoYaml(monaco, {
-  enableSchemaRequest: true,
-  schemas: [
-    {
-      // If YAML file is opened matching this glob
-      fileMatch: ['**/person.yaml'],
-      // The following schema will be applied
-      schema: {
-        type: 'object',
-        properties: {
-          name: {
-            type: 'string',
-            description: 'The person’s display name'
-          },
-          age: {
-            type: 'integer',
-            description: 'How old is the person in years?'
-          },
-          occupation: {
-            enum: ['Delivery person', 'Software engineer', 'Astronaut']
-          }
-        }
-      },
-      // And the URI will be linked to as the source.
-      uri: 'https://code-editor.mastersign.de/schema/person.json'
-    }
-  ]
+  enableSchemaRequest: false,
+  schemas: []
 })
 
-const value = `
-name: User
-`
+function loadSchema(schema: any, uri: string) {
+  monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
+    validate: true,
+    schemas: [
+      {
+        uri,
+        fileMatch: ['*.json'],
+        schema,
+      },
+    ],
+  })
+  monacoYaml.update({
+    enableSchemaRequest: false,
+    schemas: [
+      {
+        uri,
+        fileMatch: ['*.yaml', '*.yml'],
+        schema,
+      },
+    ],
+  })
+}
 
+const darkModePreference = window.matchMedia('(prefers-color-scheme: dark)')
 const ed = editor.create(document.getElementById('editor')!, {
   automaticLayout: true,
-  model: editor.createModel(value, 'yaml', Uri.parse('test/person.yaml')),
-  theme: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'vs-dark' : 'vs-light',
+  theme: darkModePreference.matches ? 'vs-dark' : 'vs-light',
   quickSuggestions: {
     other: true,
     comments: false,
     strings: true
   },
   formatOnType: true
+})
+darkModePreference.addEventListener('change', e => {
+  ed.updateOptions({ theme: e.matches ? 'vs-dark' : 'vs-light'})
 })
 
 /**
@@ -116,7 +115,14 @@ ed.onDidChangeCursorPosition(async (event) => {
   while (breadcrumbs.lastChild) {
     breadcrumbs.lastChild.remove()
   }
+  const symbolList = []
   for (const symbol of iterateSymbols(symbols, event.position)) {
+    symbolList.push({
+      name: symbol.name,
+      detail: symbol.detail,
+      startLine: symbol.range.startLineNumber,
+      startColumn: symbol.range.startColumn,
+    })
     const breadcrumb = document.createElement('span')
     breadcrumb.setAttribute('role', 'button')
     breadcrumb.classList.add('breadcrumb')
@@ -136,6 +142,9 @@ ed.onDidChangeCursorPosition(async (event) => {
     })
     breadcrumbs.append(breadcrumb)
   }
+  if (wpfControl) {
+    wpfControl.NotifyCurrentSymbols(JSON.stringify(symbolList))
+  }
 })
 
 editor.onDidChangeMarkers(([resource]) => {
@@ -144,7 +153,16 @@ editor.onDidChangeMarkers(([resource]) => {
   while (problems.lastChild) {
     problems.lastChild.remove()
   }
+  const markerList = []
   for (const marker of markers) {
+    markerList.push({
+      startLineNumber: marker.startLineNumber,
+      startColumn: marker.startColumn,
+      endLineNumber: marker.endLineNumber,
+      endColumn: marker.endColumn,
+      message: marker.message,
+      severity: marker.severity,
+    })
     if (marker.severity === MarkerSeverity.Hint) {
       continue
     }
@@ -166,4 +184,39 @@ editor.onDidChangeMarkers(([resource]) => {
     })
     problems.append(wrapper)
   }
+  if (wpfControl) {
+    wpfControl.NotifyMarkers(JSON.stringify(markerList))
+  }
 })
+
+function loadModel(content: string, language: string, filePath: string) {
+  const oldModel = ed.getModel()
+  const newModel = editor.createModel(content, language, Uri.parse(filePath))
+  ed.setModel(newModel)
+  oldModel?.dispose()
+  ed.focus()
+}
+
+function getContent() {
+  return ed.getModel()?.getValue()
+}
+
+function setCursorPosition(lineNumber: number, column: number) {
+  ed.setPosition({ lineNumber, column })
+}
+
+function focus() {
+  ed.focus()
+}
+
+window.mastersignCodeEditor = {
+  loadSchema,
+  loadModel,
+  getContent,
+  setCursorPosition,
+  focus,
+}
+
+if (wpfControl) {
+  wpfControl.NotifyMonacoLoaded()
+}
