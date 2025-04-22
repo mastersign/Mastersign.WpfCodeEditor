@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Mastersign.WpfCodeEditor.Demo.Properties
+namespace MonacoEdit.Properties
 {
 
 
@@ -44,7 +44,7 @@ namespace Mastersign.WpfCodeEditor.Demo.Properties
             {
                 if ((resourceMan == null))
                 {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Mastersign.WpfCodeEditor.Demo.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("MonacoEdit.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

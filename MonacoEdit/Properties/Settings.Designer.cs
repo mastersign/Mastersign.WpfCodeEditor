@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Mastersign.WpfCodeEditor.Demo.Properties
+namespace MonacoEdit.Properties
 {
 
 

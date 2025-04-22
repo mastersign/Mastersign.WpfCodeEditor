@@ -1,10 +1,10 @@
-﻿<Window x:Class="Mastersign.WpfCodeEditor.Demo.MainWindow"
+﻿<Window x:Class="MonacoEdit.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:ye="clr-namespace:Mastersign.WpfCodeEditor;assembly=Mastersign.WpfCodeEditor"
-        xmlns:local="clr-namespace:Mastersign.WpfCodeEditor.Demo"
+        xmlns:local="clr-namespace:MonacoEdit"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>

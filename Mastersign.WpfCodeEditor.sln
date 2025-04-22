@@ -5,7 +5,7 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mastersign.WpfCodeEditor", "Mastersign.WpfCodeEditor\Mastersign.WpfCodeEditor.csproj", "{0C23B1B3-2077-4653-B8EA-3CC6C40C4331}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mastersign.WpfCodeEditor.Demo", "Mastersign.WpfCodeEditor.Demo\Mastersign.WpfCodeEditor.Demo.csproj", "{F87A28D8-B44D-4BF3-8D74-D54E64B25FC6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonacoEdit", "MonacoEdit\MonacoEdit.csproj", "{F87A28D8-B44D-4BF3-8D74-D54E64B25FC6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
