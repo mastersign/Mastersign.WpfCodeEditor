@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using Microsoft.Web.WebView2.Core;
@@ -80,6 +82,25 @@ public class CodeEditor : Control
 
     public bool UseDevelopmentProxy { get; set; }
 
+    private WebView2 webview;
+
+    private WebView2 WebView
+    {
+        get => webview;
+        set
+        {
+            if (webview != null)
+            {
+                webview.CoreWebView2InitializationCompleted -= CoreWebView2InitializationCompletedHandler;
+            }
+            webview = value;
+            if (webview != null)
+            {
+                webview.CoreWebView2InitializationCompleted += CoreWebView2InitializationCompletedHandler;
+            }
+        }
+    }
+
     public override void OnApplyTemplate()
     {
         WebView = GetTemplateChild("WebView") as WebView2;
@@ -109,14 +130,14 @@ public class CodeEditor : Control
             CoreWebView2WebResourceContext.All,
             CoreWebView2WebResourceRequestSourceKinds.All);
 
-        WebView.CoreWebView2.WebResourceRequested += CoreWebView2_WebResourceRequested;
+        WebView.CoreWebView2.WebResourceRequested += WebResourceRequestHandler;
 
         WebView.CoreWebView2.AddHostObjectToScript("wpfControl", new CodeEditorBridge(this));
 
         WebView.CoreWebView2.Navigate("https://monaco.mastersign-code-editor/index.html");
     }
 
-    private void CoreWebView2_WebResourceRequested(object sender, CoreWebView2WebResourceRequestedEventArgs e)
+    private void WebResourceRequestHandler(object sender, CoreWebView2WebResourceRequestedEventArgs e)
     {
         if (e.Request.Method != "GET")
         {
@@ -150,48 +171,34 @@ public class CodeEditor : Control
             resource.ResourceStream, 200, "OK", headers.ToString());
     }
 
+    public event EventHandler<EventArgs> EditorReady;
+
     internal void MonacoLoadedHandler()
     {
-        WebView.ExecuteScriptAsync("""
-        mastersignCodeEditor.loadSchema(
-            {
-              type: 'object',
-              properties: {
-                name: {
-                  type: 'string',
-                  description: 'The person’s display name'
-                },
-                age: {
-                  type: 'integer',
-                  description: 'How old is the person in years?'
-                },
-                occupation: {
-                  enum: ['Delivery person', 'Software engineer', 'Astronaut']
-                }
-              }
-            },
-            "https://mastersign.de/demo.json")
-        //mastersignCodeEditor.loadModel('{ "name": "Demo" }', 'json', 'demo.json')
-        mastersignCodeEditor.loadModel('name: Demo', 'yaml', 'demo.yaml')
-        """);
+        EditorReady?.Invoke(this, EventArgs.Empty);
     }
 
-    private WebView2 webview;
+    private readonly ObservableCollection<CodeSymbol> currentSymbols = [];
 
-    private WebView2 WebView
+    public event EventHandler<EventArgs> CurrentSymbolsChanged;
+
+    internal void CurrentSymbolsHandler(ICollection<CodeSymbol> symbols)
     {
-        get => webview;
-        set
+        if (currentSymbols.UpdateSorted(symbols))
         {
-            if (webview != null)
-            {
-                webview.CoreWebView2InitializationCompleted -= CoreWebView2InitializationCompletedHandler;
-            }
-            webview = value;
-            if (webview != null)
-            {
-                webview.CoreWebView2InitializationCompleted += CoreWebView2InitializationCompletedHandler;
-            }
+            CurrentSymbolsChanged?.Invoke(this, EventArgs.Empty);
+        }
+    }
+
+    private readonly ObservableCollection<CodeMarker> markers = [];
+
+    public event EventHandler<EventArgs> CodeMarkersChanged;
+
+    internal void CodeMarkersHandler(ICollection<CodeMarker> markers)
+    {
+        if (this.markers.UpdateSorted(markers))
+        {
+            CodeMarkersChanged?.Invoke(this, EventArgs.Empty);
         }
     }
 
@@ -201,5 +208,24 @@ public class CodeEditor : Control
         {
             WebView.CoreWebView2.Navigate(url);
         }
+    }
+
+    public async Task LoadJsonSchema(string schema, string uri)
+    {
+        await WebView.ExecuteScriptAsync(
+            $"mastersignCodeEditor.loadSchema({schema}, '{uri}')");
+    }
+
+    public async Task LoadText(string text, CodeLanguage language, string filename)
+    {
+        var languageName = Enum.GetName(typeof(CodeLanguage), language).ToLowerInvariant();
+        var escapedText = text.Replace("'", @"\'");
+        await WebView.ExecuteScriptAsync(
+            $"mastersignCodeEditor.loadModel('{escapedText}', '{languageName}', '{filename}')");
+    }
+
+    public async Task<string> GetText()
+    {
+        return await WebView.ExecuteScriptAsync("mastersignCodeEditor.getContent()");
     }
 }

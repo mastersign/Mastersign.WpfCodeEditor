@@ -32,5 +32,34 @@ namespace MonacoEdit
                 editor.Navigate(txtURL.Text);
             }
         }
+
+        private async void EditorReadyHandler(object sender, EventArgs e)
+        {
+            var schema = """
+            {
+                type: 'object',
+                properties: {
+                name: {
+                    type: 'string',
+                    description: 'The person’s display name'
+                },
+                age: {
+                    type: 'integer',
+                    description: 'How old is the person in years?'
+                },
+                occupation: {
+                    enum: ['Delivery person', 'Software engineer', 'Astronaut']
+                }
+                }
+            }
+            """;
+            var uri = "https://mastersign.de/demo.json";
+
+            await editor.LoadJsonSchema(schema, uri);
+
+            var text = "name: Mr T";
+
+            await editor.LoadText(text, Mastersign.WpfCodeEditor.CodeLanguage.Yaml, "test.yml");
+        }
     }
 }

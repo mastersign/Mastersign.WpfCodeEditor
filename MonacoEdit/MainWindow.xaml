@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:ye="clr-namespace:Mastersign.WpfCodeEditor;assembly=Mastersign.WpfCodeEditor"
+        xmlns:ce="clr-namespace:Mastersign.WpfCodeEditor;assembly=Mastersign.WpfCodeEditor"
         xmlns:local="clr-namespace:MonacoEdit"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
@@ -16,7 +16,8 @@
         <TextBox x:Name="txtURL" 
                  Margin="10"
                  KeyDown="txtURL_KeyDown"  />
-        <ye:CodeEditor x:Name="editor" Grid.Row="1" Margin="10"
-                       UseDevelopmentProxy="False" />
+        <ce:CodeEditor x:Name="editor" Grid.Row="1" Margin="10"
+                       UseDevelopmentProxy="False"
+                       EditorReady="EditorReadyHandler"/>
     </Grid>
 </Window>
