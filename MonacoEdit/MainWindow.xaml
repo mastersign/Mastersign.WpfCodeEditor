@@ -1,23 +1,77 @@
-﻿<Window x:Class="MonacoEdit.MainWindow"
+﻿<ui:FluentWindow
+        x:Class="MonacoEdit.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:ce="clr-namespace:Mastersign.WpfCodeEditor;assembly=Mastersign.WpfCodeEditor"
+        xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+        xmlns:ye="clr-namespace:Mastersign.WpfCodeEditor;assembly=Mastersign.WpfCodeEditor"
+        xmlns:tools="clr-namespace:Mastersign.WpfTools"
         xmlns:local="clr-namespace:MonacoEdit"
+        xmlns:p="clr-namespace:MonacoEdit.Properties"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        ExtendsContentIntoTitleBar="True"
+        Title="{Binding WindowTitle, Source={x:Static local:App.Current}}"
+        Height="450" Width="800"
+        Loaded="WindowLoadedHandler">
+
+    <ui:FluentWindow.Resources>
+        <RoutedUICommand x:Key="Revert" Text="{x:Static p:Resources.Command_Revert}" />
+        <tools:BooleanToVisibilityConverter x:Key="Bool2Visibility" Invisible="Collapsed" />
+    </ui:FluentWindow.Resources>
+
+    <ui:FluentWindow.CommandBindings>
+        <CommandBinding Command="{x:Static ApplicationCommands.Open}"
+                        Executed="OpenCommandHandler" />
+        <CommandBinding Command="{x:Static ApplicationCommands.Save}"
+                        CanExecute="CanSaveCommandPredicate"
+                        Executed="SaveCommandHandler" />
+        <CommandBinding Command="{StaticResource Revert}"
+                        CanExecute="CanRevertCommandPredicate"
+                        Executed="RevertCommandHandler" />
+    </ui:FluentWindow.CommandBindings>
+    
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition />
         </Grid.RowDefinitions>
 
-        <TextBox x:Name="txtURL" 
-                 Margin="10"
-                 KeyDown="txtURL_KeyDown"  />
-        <ce:CodeEditor x:Name="editor" Grid.Row="1" Margin="10"
-                       UseDevelopmentProxy="False"
-                       EditorReady="EditorReadyHandler"/>
+        <ui:TitleBar 
+                Grid.Row="0" Height="40"
+                Title="{Binding Title, RelativeSource={RelativeSource AncestorType={x:Type ui:FluentWindow}, Mode=FindAncestor}}">
+            <ui:TitleBar.Icon>
+                <ui:ImageIcon Source="pack://application:,,,/Logo.png" />
+            </ui:TitleBar.Icon>
+            <ui:TitleBar.TrailingContent>
+                <TextBlock x:Name="txtSchemaName" Text="{Binding SecondaryTitle, Source={x:Static local:App.Current}}" />
+            </ui:TitleBar.TrailingContent>
+        </ui:TitleBar>
+
+        <Menu x:Name="menu" Grid.Row="1" Margin="4,0"
+              Visibility="{Binding ShowToolbar, Source={x:Static local:App.Current}, Converter={StaticResource Bool2Visibility}}">
+            <ui:MenuItem 
+                    x:Name="miOpen"
+                    Icon="{ui:SymbolIcon FolderOpen16}"
+                    Command="{x:Static ApplicationCommands.Open}"
+                    Visibility="{Binding ShowOpen, Source={x:Static local:App.Current}, Converter={StaticResource Bool2Visibility}}"/>
+            <ui:MenuItem
+                    x:Name="miRevert"
+                    Icon="{ui:SymbolIcon ArrowCounterclockwise16}"
+                    Command="{StaticResource Revert}"
+                    Visibility="{Binding ShowRevert, Source={x:Static local:App.Current}, Converter={StaticResource Bool2Visibility}}"/>
+            <ui:MenuItem
+                    x:Name="miSave"
+                    Icon="{ui:SymbolIcon Save16}"
+                    Command="{x:Static ApplicationCommands.Save}"
+                    Visibility="{Binding ShowSave, Source={x:Static local:App.Current}, Converter={StaticResource Bool2Visibility}}"/>
+        </Menu>
+        
+        <ye:CodeEditor 
+                x:Name="editor"
+                Grid.Row="2" Margin="4"
+                UseDevelopmentProxy="True"
+                EditorReady="EditorReadyHandler" />
     </Grid>
-</Window>
+</ui:FluentWindow>

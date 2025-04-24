@@ -23,7 +23,7 @@ body {
   display: flex;
   flex-flow: column;
   font-family: sans-serif;
-  height: 100vh;
+  height: 100dvh;
   margin: 0;
   font-family: system-ui, 'Segoe UI';
 }

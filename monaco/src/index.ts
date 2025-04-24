@@ -41,12 +41,13 @@ window.MonacoEnvironment = {
 }
 
 const monacoYaml = configureMonacoYaml(monaco, {
-  enableSchemaRequest: false,
+  enableSchemaRequest: true,
   schemas: []
 })
 
 function loadSchema(schema: any, uri: string) {
   monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
+    enableSchemaRequest: true,
     validate: true,
     schemas: [
       {
@@ -191,9 +192,13 @@ editor.onDidChangeMarkers(([resource]) => {
 
 function loadModel(content: string, language: string, filePath: string) {
   const oldModel = ed.getModel()
-  const newModel = editor.createModel(content, language, Uri.parse(filePath))
-  ed.setModel(newModel)
+  ed.setModel(null)
   oldModel?.dispose()
+  try {
+    const newModel = editor.createModel(content, language, Uri.parse(filePath))
+    ed.setModel(newModel)
+  } catch (err) {
+  }
   ed.focus()
 }
 

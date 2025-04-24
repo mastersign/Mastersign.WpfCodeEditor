@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -212,20 +213,26 @@ public class CodeEditor : Control
 
     public async Task LoadJsonSchema(string schema, string uri)
     {
-        await WebView.ExecuteScriptAsync(
-            $"mastersignCodeEditor.loadSchema({schema}, '{uri}')");
+        var jsCode = $"mastersignCodeEditor.loadSchema({schema}, '{uri}'); console.log('loaded schema');";
+        await WebView.ExecuteScriptAsync(jsCode);
     }
 
     public async Task LoadText(string text, CodeLanguage language, string filename)
     {
         var languageName = Enum.GetName(typeof(CodeLanguage), language).ToLowerInvariant();
-        var escapedText = text.Replace("'", @"\'");
-        await WebView.ExecuteScriptAsync(
-            $"mastersignCodeEditor.loadModel('{escapedText}', '{languageName}', '{filename}')");
+        var escapedText = text
+            .Replace(@"\", @"\\")
+            .Replace("'", @"\'")
+            .Replace("\r", "")
+            .Replace("\n", @"\n");
+        var jsCode = $"mastersignCodeEditor.loadModel('{escapedText}', '{languageName}', '{filename}'); console.log('loaded text');";
+        await WebView.ExecuteScriptAsync(jsCode);
     }
 
     public async Task<string> GetText()
     {
-        return await WebView.ExecuteScriptAsync("mastersignCodeEditor.getContent()");
+        var jsonResult = await WebView.ExecuteScriptAsync("mastersignCodeEditor.getContent()");
+        var text = (string)JsonSerializer.Deserialize(jsonResult, typeof(string));
+        return text.Replace(@"\n", Environment.NewLine);
     }
 }
