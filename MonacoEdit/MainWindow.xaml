@@ -67,11 +67,19 @@
                     Command="{x:Static ApplicationCommands.Save}"
                     Visibility="{Binding ShowSave, Source={x:Static local:App.Current}, Converter={StaticResource Bool2Visibility}}"/>
         </Menu>
-        
-        <ye:CodeEditor 
+
+        <ye:CodeEditor
                 x:Name="editor"
                 Grid.Row="2" Margin="4"
-                UseDevelopmentProxy="True"
-                EditorReady="EditorReadyHandler" />
+                UseDevelopmentProxy="False"
+                EditorReady="EditorReadyHandler">
+            <ye:CodeEditor.Configuration>
+                <ye:CodeEditorConfiguration
+                        EnableSchemaRequests="True"
+                        ShowBreadcrumbs="True"
+                        ShowCodeMarkers="True"
+                        />
+            </ye:CodeEditor.Configuration>
+        </ye:CodeEditor>
     </Grid>
 </ui:FluentWindow>

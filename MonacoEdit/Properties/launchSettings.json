@@ -3,7 +3,7 @@
     "MonacoEdit": {
       "commandName": "Project",
       "workingDirectory": ".",
-      "commandLineArgs": "-o -j test-data\\package-schema.json -u http://json-schema.org/draft-07/schema ..\\monaco\\package.json"
+      "commandLineArgs": "-j test-data\\package-schema.json -u http://json-schema.org/draft-07/schema ..\\monaco\\package.json"
     }
   }
 }

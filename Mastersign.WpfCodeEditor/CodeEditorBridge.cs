@@ -28,6 +28,11 @@ public class CodeEditorBridge
         editor.Dispatcher.BeginInvoke(editor.MonacoLoadedHandler, null);
     }
 
+    public void NotifyMonacoInitialized()
+    {
+        editor.Dispatcher.BeginInvoke(editor.MonacoInitializedHandler, null);
+    }
+
     public void NotifyCurrentSymbols(string jsonSymbols)
     {
         var symbols = JsonSerializer.Deserialize<List<CodeSymbol>>(jsonSymbols, jsonOptions);

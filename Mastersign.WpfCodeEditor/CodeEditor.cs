@@ -15,6 +15,9 @@ namespace Mastersign.WpfCodeEditor;
 
 public class CodeEditor : Control
 {
+    private const string EMBEDDED_RESOURCE_TLD = ".mastersign-code-editor";
+    private const string MONACO_EDITOR_URL = $"https://monaco{EMBEDDED_RESOURCE_TLD}/index.html";
+
     private static string webviewDataDirectory = Path.Combine(
         Path.GetTempPath(),
         System.Reflection.Assembly.GetExecutingAssembly().GetName().Name
@@ -65,7 +68,7 @@ public class CodeEditor : Control
 
     private static WebResource GetEmbeddedResource(Uri url)
     {
-        var archiveName = url.Host.Replace(".mastersign-code-editor", "");
+        var archiveName = url.Host.Replace(EMBEDDED_RESOURCE_TLD, "");
         var archive = GetEmbeddedResources(archiveName);
         if (archive is null)
         {
@@ -124,10 +127,12 @@ public class CodeEditor : Control
         await WebView.EnsureCoreWebView2Async(env);
     }
 
+    public CodeEditorConfiguration Configuration { get; set; } = new();
+
     private void CoreWebView2InitializationCompletedHandler(object sender, CoreWebView2InitializationCompletedEventArgs e)
     {
         WebView.CoreWebView2.AddWebResourceRequestedFilter(
-            "https://*.mastersign-code-editor/*",
+            $"https://*{EMBEDDED_RESOURCE_TLD}/*",
             CoreWebView2WebResourceContext.All,
             CoreWebView2WebResourceRequestSourceKinds.All);
 
@@ -135,7 +140,7 @@ public class CodeEditor : Control
 
         WebView.CoreWebView2.AddHostObjectToScript("wpfControl", new CodeEditorBridge(this));
 
-        WebView.CoreWebView2.Navigate("https://monaco.mastersign-code-editor/index.html");
+        WebView.CoreWebView2.Navigate(MONACO_EDITOR_URL);
     }
 
     private void WebResourceRequestHandler(object sender, CoreWebView2WebResourceRequestedEventArgs e)
@@ -172,9 +177,23 @@ public class CodeEditor : Control
             resource.ResourceStream, 200, "OK", headers.ToString());
     }
 
+    internal async void MonacoLoadedHandler()
+    {
+        var jsCode = $$"""
+            mastersignCodeEditor.initialize({
+                enableSchemaRequests: {{(Configuration.EnableSchemaRequests ? "true" : "false")}},
+                showBreadcrumbs: {{(Configuration.ShowBreadcrumbs ? "true" : "false")}},
+                showCodeMarkers: {{(Configuration.ShowCodeMarkers ? "true" : "false")}},
+                lightTheme: '{{Configuration.LightTheme}}',
+                darkTheme: '{{Configuration.DarkTheme}}',
+            });
+            """;
+        await WebView.CoreWebView2.ExecuteScriptAsync(jsCode);
+    }
+
     public event EventHandler<EventArgs> EditorReady;
 
-    internal void MonacoLoadedHandler()
+    internal void MonacoInitializedHandler()
     {
         EditorReady?.Invoke(this, EventArgs.Empty);
     }
@@ -203,13 +222,9 @@ public class CodeEditor : Control
         }
     }
 
-    public void Navigate(string url)
-    {
-        if (WebView != null && WebView.CoreWebView2 != null)
-        {
-            WebView.CoreWebView2.Navigate(url);
-        }
-    }
+    public void Reinitialize() => WebView?.CoreWebView2?.Reload();
+
+    internal void Navigate(string url) => WebView?.CoreWebView2?.Navigate(url);
 
     public async Task LoadJsonSchema(string schema, string uri)
     {
@@ -220,19 +235,15 @@ public class CodeEditor : Control
     public async Task LoadText(string text, CodeLanguage language, string filename)
     {
         var languageName = Enum.GetName(typeof(CodeLanguage), language).ToLowerInvariant();
-        var escapedText = text
-            .Replace(@"\", @"\\")
-            .Replace("'", @"\'")
-            .Replace("\r", "")
-            .Replace("\n", @"\n");
-        var jsCode = $"mastersignCodeEditor.loadModel('{escapedText}', '{languageName}', '{filename}'); console.log('loaded text');";
+        var jsonText = JsonSerializer.Serialize(text);
+        var jsCode = $"mastersignCodeEditor.loadModel({jsonText}, '{languageName}', '{filename}'); console.log('loaded text');";
         await WebView.ExecuteScriptAsync(jsCode);
     }
 
     public async Task<string> GetText()
     {
         var jsonResult = await WebView.ExecuteScriptAsync("mastersignCodeEditor.getContent()");
-        var text = (string)JsonSerializer.Deserialize(jsonResult, typeof(string));
+        var text = JsonSerializer.Deserialize<string>(jsonResult);
         return text.Replace(@"\n", Environment.NewLine);
     }
 }
