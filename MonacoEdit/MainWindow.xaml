@@ -78,6 +78,13 @@
                         EnableSchemaRequests="True"
                         ShowBreadcrumbs="True"
                         ShowCodeMarkers="True"
+                        CodeMarkersHeight="30vh"
+                        LineNumbers="On"
+                        VerticalScrollbar="Visible"
+                        HorizontalScrollbar="Auto"
+                        MinimapSide="Right"
+                        MinimapAutohide="False"
+                        MinimapShowSlider="Always"
                         />
             </ye:CodeEditor.Configuration>
         </ye:CodeEditor>

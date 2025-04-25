@@ -44,6 +44,14 @@ interface Configuration {
   enableSchemaRequests: boolean,
   showBreadcrumbs: boolean,
   showCodeMarkers: boolean,
+  codeMarkersHeight: string,
+  lineNumbers: "on" | "off" | "relative" | "interval",
+  verticalScrollbar: "auto" | "visible" | "hidden",
+  horizontalScrollbar: "auto" | "visible" | "hidden",
+  minimapEnabled: boolean,
+  minimapAutohide: boolean,
+  minimapSide: "right" | "left",
+  minimapShowSlider: "always" | "mouseover",
   lightTheme: string,
   darkTheme: string,
 }
@@ -57,6 +65,14 @@ let configuration: Configuration = {
   enableSchemaRequests: true,
   showBreadcrumbs: true,
   showCodeMarkers: true,
+  codeMarkersHeight: "20vh",
+  lineNumbers: "on",
+  verticalScrollbar: "auto",
+  horizontalScrollbar: "auto",
+  minimapEnabled: true,
+  minimapAutohide: false,
+  minimapSide: "right",
+  minimapShowSlider: "mouseover",
   lightTheme: 'vs-light',
   darkTheme: 'vs-dark',
 }
@@ -83,6 +99,7 @@ function initialize(config: Configuration) {
   const problems = document.getElementById('problems')!
   breadcrumbs.style.display = configuration.showBreadcrumbs ? 'block' : 'none'
   problems.style.display = configuration.showCodeMarkers ? 'block' : 'none'
+  problems.style.height = configuration.codeMarkersHeight
 
   state.editor = buildEditor()
 
@@ -141,6 +158,17 @@ function* iterateSymbols(
 function buildEditor() {
   const darkModePreference = window.matchMedia('(prefers-color-scheme: dark)')
   const ed = editor.create(document.getElementById('editor')!, {
+    lineNumbers: configuration.lineNumbers,
+    scrollbar: {
+      vertical: configuration.verticalScrollbar,
+      horizontal: configuration.horizontalScrollbar,
+    },
+    minimap: {
+      enabled: configuration.minimapEnabled,
+      autohide: configuration.minimapAutohide,
+      side: configuration.minimapSide,
+      showSlider: configuration.minimapShowSlider,
+    },
     automaticLayout: true,
     theme: darkModePreference.matches ? configuration.darkTheme : configuration.lightTheme,
     quickSuggestions: {

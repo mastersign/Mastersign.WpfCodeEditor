@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -32,9 +33,25 @@ public class CodeEditor : Control
         set { webviewDataDirectory = value; }
     }
 
+    private static readonly JsonSerializerOptions configurationSerializationOptions = new()
+    {
+        IndentSize = 2,
+        WriteIndented = true,
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+    };
+
     static CodeEditor()
     {
         DefaultStyleKeyProperty.OverrideMetadata(typeof(CodeEditor), new FrameworkPropertyMetadata(typeof(CodeEditor)));
+
+        configurationSerializationOptions.Converters.Add(
+            new JsonStringEnumConverter<LineNumberStyle>(JsonNamingPolicy.CamelCase));
+        configurationSerializationOptions.Converters.Add(
+            new JsonStringEnumConverter<ScrollbarVisibility>(JsonNamingPolicy.CamelCase));
+        configurationSerializationOptions.Converters.Add(
+            new JsonStringEnumConverter<MinimapSide>(JsonNamingPolicy.CamelCase));
+        configurationSerializationOptions.Converters.Add(
+            new JsonStringEnumConverter<MinimapSliderVisibility>(JsonNamingPolicy.CamelCase));
     }
 
     private static readonly Dictionary<string, CompressedResources> embeddedResources = [];
@@ -131,6 +148,19 @@ public class CodeEditor : Control
 
     private void CoreWebView2InitializationCompletedHandler(object sender, CoreWebView2InitializationCompletedEventArgs e)
     {
+        WebView.CoreWebView2.Settings.AreDefaultScriptDialogsEnabled = false;
+        WebView.CoreWebView2.Settings.IsGeneralAutofillEnabled = false;
+        WebView.CoreWebView2.Settings.IsPasswordAutosaveEnabled = false;
+        WebView.CoreWebView2.Settings.IsPinchZoomEnabled = false;
+        WebView.CoreWebView2.Settings.IsZoomControlEnabled = false;
+#if DEBUG
+        WebView.CoreWebView2.Settings.AreBrowserAcceleratorKeysEnabled = true;
+        WebView.CoreWebView2.Settings.AreDevToolsEnabled = true;
+#else
+        WebView.CoreWebView2.Settings.AreBrowserAcceleratorKeysEnabled = false;
+        WebView.CoreWebView2.Settings.AreDevToolsEnabled = false;
+#endif
+
         WebView.CoreWebView2.AddWebResourceRequestedFilter(
             $"https://*{EMBEDDED_RESOURCE_TLD}/*",
             CoreWebView2WebResourceContext.All,
@@ -179,15 +209,8 @@ public class CodeEditor : Control
 
     internal async void MonacoLoadedHandler()
     {
-        var jsCode = $$"""
-            mastersignCodeEditor.initialize({
-                enableSchemaRequests: {{(Configuration.EnableSchemaRequests ? "true" : "false")}},
-                showBreadcrumbs: {{(Configuration.ShowBreadcrumbs ? "true" : "false")}},
-                showCodeMarkers: {{(Configuration.ShowCodeMarkers ? "true" : "false")}},
-                lightTheme: '{{Configuration.LightTheme}}',
-                darkTheme: '{{Configuration.DarkTheme}}',
-            });
-            """;
+        var configJson = JsonSerializer.Serialize(Configuration, configurationSerializationOptions);
+        var jsCode = $"mastersignCodeEditor.initialize({configJson})";
         await WebView.CoreWebView2.ExecuteScriptAsync(jsCode);
     }
 
