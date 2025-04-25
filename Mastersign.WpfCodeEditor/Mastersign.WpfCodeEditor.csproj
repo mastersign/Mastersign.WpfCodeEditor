@@ -13,8 +13,7 @@
     <Copyright>Copyright © 2025 Tobias Kiertscher</Copyright>
     <Company>Mastersign</Company>
     <Description>
-      WPF control for editing code with syntax highlighting and code completion.
-      Intended to be used as an YAML and JSON editor with JSON schema support.
+      WPF control for editing JSON and YAML with syntax highlighting and JSON schema support.
       With this capability it is well suited for editing configuration files and data models.
       Based on the Monaco editor from Visual Studio Code.
     </Description>

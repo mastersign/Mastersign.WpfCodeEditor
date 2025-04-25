@@ -2,7 +2,7 @@
 
 ![NuGet Version](https://img.shields.io/nuget/v/Mastersign.WpfCodeEditor)
 
-> WPF control for editing code with syntax highlighting and code completion
+> WPF control for editing JSON and YAML with syntax highlighting and JSON schema support
 
 ![Demo Screenshot](screenshot.png)
 

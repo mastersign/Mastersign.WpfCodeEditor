@@ -1,6 +1,6 @@
 # Mastersign WPF Code Editor Control
 
-> WPF control for editing code with syntax highlighting and code completion
+> WPF control for editing JSON and YAML with syntax highlighting and JSON schema support
 
 ## Intention
 
