@@ -81,8 +81,8 @@ function initialize(config: Configuration) {
   // adjust layout
   const breadcrumbs = document.getElementById('breadcrumbs')!
   const problems = document.getElementById('problems')!
-  breadcrumbs.style.display = configuration.showBreadcrumbs ? '' : 'none'
-  problems.style.display = configuration.showCodeMarkers ? '' : 'none'
+  breadcrumbs.style.display = configuration.showBreadcrumbs ? 'block' : 'none'
+  problems.style.display = configuration.showCodeMarkers ? 'block' : 'none'
 
   state.editor = buildEditor()
 

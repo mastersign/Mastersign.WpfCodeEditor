@@ -20,10 +20,10 @@
 
 body {
   background: var(--background-color);
-  display: flex;
   flex-flow: column;
   font-family: sans-serif;
-  height: 100dvh;
+  height: 100vh;
+  width: 100vw;
   margin: 0;
   font-family: system-ui, 'Segoe UI';
 }
@@ -31,16 +31,18 @@ body {
 main {
   background: var(--editor-background);
   /* box-shadow: 0 0 10px var(--shadow-color); */
-  display: flex;
-  flex: 1 1 auto;
-  flex-flow: column;
+  height: 100vh;
+  width: 100vw;
+  display: grid;
+  grid-template-rows: max-content minmax(0, auto) max-content;
+  grid-template-columns: minmax(0, auto);
   margin: 0;
 }
 
 #breadcrumbs {
+  grid-row-start: 1;
   border-bottom: 1px solid var(--shadow-color);
   color: var(--foreground-color);
-  flex: 0 0 1rem;
   padding: 0.2rem 0.5rem 0.3rem 0.2rem;
 }
 
@@ -71,12 +73,13 @@ main {
 }
 
 #editor {
-  flex: 1 1 auto;
+  grid-row-start: 2;
 }
 
 #problems {
+  grid-row-start: 3;
   border-top: 1px solid var(--shadow-color);
-  flex: 0 0 20vh;
+  height: 20vh;
   color: var(--foreground-color);
   overflow-y: scroll;
 }
