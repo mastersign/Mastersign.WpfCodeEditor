@@ -5,7 +5,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
-        xmlns:ye="clr-namespace:Mastersign.WpfCodeEditor;assembly=Mastersign.WpfCodeEditor"
+        xmlns:ce="clr-namespace:Mastersign.WpfCodeEditor;assembly=Mastersign.WpfCodeEditor"
         xmlns:tools="clr-namespace:Mastersign.WpfTools"
         xmlns:local="clr-namespace:MonacoEdit"
         xmlns:p="clr-namespace:MonacoEdit.Properties"
@@ -68,13 +68,13 @@
                     Visibility="{Binding ShowSave, Source={x:Static local:App.Current}, Converter={StaticResource Bool2Visibility}}"/>
         </Menu>
 
-        <ye:CodeEditor
+        <ce:CodeEditor
                 x:Name="editor"
                 Grid.Row="2" Margin="4"
                 UseDevelopmentProxy="False"
                 EditorReady="EditorReadyHandler">
-            <ye:CodeEditor.Configuration>
-                <ye:CodeEditorConfiguration
+            <ce:CodeEditor.Configuration>
+                <ce:CodeEditorConfiguration
                         EnableSchemaRequests="True"
                         ShowBreadcrumbs="True"
                         ShowCodeMarkers="True"
@@ -86,7 +86,7 @@
                         MinimapAutohide="False"
                         MinimapShowSlider="Always"
                         />
-            </ye:CodeEditor.Configuration>
-        </ye:CodeEditor>
+            </ce:CodeEditor.Configuration>
+        </ce:CodeEditor>
     </Grid>
 </ui:FluentWindow>

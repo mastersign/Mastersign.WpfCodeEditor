@@ -249,21 +249,20 @@ public class CodeEditor : Control
 
     internal void Navigate(string url) => WebView?.CoreWebView2?.Navigate(url);
 
-    public async Task LoadJsonSchema(string schema, string uri)
+    public async Task LoadJsonSchemaAsync(string schema, string uri)
     {
         var jsCode = $"mastersignCodeEditor.loadSchema({schema}, '{uri}'); console.log('loaded schema');";
         await WebView.ExecuteScriptAsync(jsCode);
     }
 
-    public async Task LoadText(string text, CodeLanguage language, string filename)
+    public async Task LoadTextAsync(string text, string language, string filename)
     {
-        var languageName = Enum.GetName(typeof(CodeLanguage), language).ToLowerInvariant();
         var jsonText = JsonSerializer.Serialize(text);
-        var jsCode = $"mastersignCodeEditor.loadModel({jsonText}, '{languageName}', '{filename}'); console.log('loaded text');";
+        var jsCode = $"mastersignCodeEditor.loadModel({jsonText}, '{language}', '{filename}'); console.log('loaded text');";
         await WebView.ExecuteScriptAsync(jsCode);
     }
 
-    public async Task<string> GetText()
+    public async Task<string> GetTextAsync()
     {
         var jsonResult = await WebView.ExecuteScriptAsync("mastersignCodeEditor.getContent()");
         var text = JsonSerializer.Deserialize<string>(jsonResult);

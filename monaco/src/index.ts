@@ -174,7 +174,7 @@ function buildEditor() {
     quickSuggestions: {
       other: true,
       comments: false,
-      strings: true
+      strings: true,
     },
     formatOnType: true
   })

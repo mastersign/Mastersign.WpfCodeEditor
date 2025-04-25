@@ -4,16 +4,12 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-using Mastersign.WpfCodeEditor;
 using Microsoft.Win32;
 using Wpf.Ui.Appearance;
 using UI = Wpf.Ui.Controls;
 
 namespace MonacoEdit
 {
-    /// <summary>
-    /// Interaktionslogik für MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : UI.FluentWindow
     {
         App App => (App)App.Current;
@@ -63,7 +59,7 @@ namespace MonacoEdit
             {
                 try
                 {
-                    await editor.LoadJsonSchema(
+                    await editor.LoadJsonSchemaAsync(
                         File.ReadAllText(schemaFile, Encoding.UTF8),
                         schemaUri ?? ("file:///" + schemaFile.Replace('\\', '/')));
                 }
@@ -87,7 +83,7 @@ namespace MonacoEdit
             {
                 try
                 {
-                    await editor.LoadText(
+                    await editor.LoadTextAsync(
                         File.ReadAllText(filename, Encoding.UTF8),
                         CodeLanguageFromFilename(filename),
                         Path.GetFileName(filename));
@@ -110,7 +106,7 @@ namespace MonacoEdit
         {
             try
             {
-                var text = await editor.GetText();
+                var text = await editor.GetTextAsync();
                 File.WriteAllText(filename, text, new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
                 textFilename = filename;
             }
@@ -124,14 +120,26 @@ namespace MonacoEdit
             return true;
         }
 
-        private CodeLanguage CodeLanguageFromFilename(string filename)
+        private string CodeLanguageFromFilename(string filename)
         {
             var ext = Path.GetExtension(filename).ToLowerInvariant();
             return ext switch
             {
-                ".json" => CodeLanguage.Json,
-                ".yaml" or ".yml" => CodeLanguage.Yaml,
-                _ => CodeLanguage.Plain,
+                // data formats
+                ".ini" => "ini",
+                ".json" => "json",
+                ".yaml" or ".yml" => "yaml",
+                ".xml" => "xml",
+
+                // document formats
+                ".html" or ".htm" => "html",
+                ".md" => "markdown",
+
+                // programming languages
+                ".css" => "css",
+                ".js" or ".jsm" => "javascript",
+                ".cs" => "csharp",
+                _ => "plain",
             };
         }
 
