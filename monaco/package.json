@@ -9,7 +9,7 @@
   },
   "author": "Tobias Kiertscher",
   "license": "MIT",
-  "description": "",
+  "description": "A bundeled version of Monaco for Mastersign.WpfCodeEditor",
   "dependencies": {
     "css-loader": "^7.0.0",
     "css-minimizer-webpack-plugin": "^7.0.0",
