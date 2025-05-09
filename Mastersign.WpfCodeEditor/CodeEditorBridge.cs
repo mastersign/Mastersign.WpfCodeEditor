@@ -36,14 +36,14 @@ public class CodeEditorBridge
     public void NotifyCurrentSymbols(string jsonSymbols)
     {
         var symbols = JsonSerializer.Deserialize<List<CodeSymbol>>(jsonSymbols, jsonOptions);
-        Debug.WriteLine(string.Join(" > ", symbols.Select(s => s.Name)));
+        //Debug.WriteLine(string.Join(" > ", symbols.Select(s => s.Name)));
         editor.Dispatcher.BeginInvoke(editor.CurrentSymbolsHandler, symbols);
     }
 
     public void NotifyMarkers(string jsonMarkers)
     {
         var markers = JsonSerializer.Deserialize<List<CodeMarker>>(jsonMarkers, jsonOptions);
-        Debug.WriteLine(JsonSerializer.Serialize(markers));
+        //Debug.WriteLine(JsonSerializer.Serialize(markers));
         editor.Dispatcher.BeginInvoke(editor.CodeMarkersHandler, markers);
     }
 }
