@@ -165,6 +165,7 @@ public class CodeEditor : Control
         WebView.CoreWebView2.Settings.AreBrowserAcceleratorKeysEnabled = false;
         WebView.CoreWebView2.Settings.AreDevToolsEnabled = false;
 #endif
+        UpdateColorScheme();
 
         WebView.CoreWebView2.AddWebResourceRequestedFilter(
             $"https://*{EMBEDDED_RESOURCE_TLD}/*",
