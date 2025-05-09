@@ -33,6 +33,10 @@ public class CodeEditorConfiguration
 
     public MinimapSliderVisibility MinimapShowSlider { get; set; } = MinimapSliderVisibility.MouseOver;
 
+    public ColorScheme Theme { get; set; } = ColorScheme.Auto;
+
+    public string OverrideTheme { get; set; } = null;
+
     public string LightTheme { get; set; } = "vs-light";
 
     public string DarkTheme { get; set; } = "vs-dark";

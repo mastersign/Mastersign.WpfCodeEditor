@@ -146,6 +146,11 @@ public class CodeEditor : Control
 
     public CodeEditorConfiguration Configuration { get; set; } = new();
 
+    public void UpdateColorScheme()
+    {
+        WebView.CoreWebView2.Profile.PreferredColorScheme = (CoreWebView2PreferredColorScheme)(int)Configuration.Theme;
+    }
+
     private void CoreWebView2InitializationCompletedHandler(object sender, CoreWebView2InitializationCompletedEventArgs e)
     {
         WebView.CoreWebView2.Settings.AreDefaultScriptDialogsEnabled = false;

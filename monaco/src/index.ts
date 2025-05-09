@@ -52,6 +52,7 @@ interface Configuration {
   minimapAutohide: boolean,
   minimapSide: "right" | "left",
   minimapShowSlider: "always" | "mouseover",
+  overrideTheme: string | null,
   lightTheme: string,
   darkTheme: string,
 }
@@ -73,6 +74,7 @@ let configuration: Configuration = {
   minimapAutohide: false,
   minimapSide: "right",
   minimapShowSlider: "mouseover",
+  overrideTheme: null,
   lightTheme: 'vs-light',
   darkTheme: 'vs-dark',
 }
@@ -156,6 +158,7 @@ function* iterateSymbols(
 }
 
 function buildEditor() {
+  console.warn(configuration)
   const darkModePreference = window.matchMedia('(prefers-color-scheme: dark)')
   const ed = editor.create(document.getElementById('editor')!, {
     lineNumbers: configuration.lineNumbers,
@@ -170,19 +173,21 @@ function buildEditor() {
       showSlider: configuration.minimapShowSlider,
     },
     automaticLayout: true,
-    theme: darkModePreference.matches ? configuration.darkTheme : configuration.lightTheme,
+    theme: configuration.overrideTheme || (darkModePreference.matches ? configuration.darkTheme : configuration.lightTheme),
     quickSuggestions: {
       other: true,
       comments: false,
       strings: true,
     },
-    formatOnType: true
+    formatOnType: true,
   })
-  darkModePreference.addEventListener('change', e => {
-    ed.updateOptions({
-      theme: e.matches ? configuration.darkTheme : configuration.lightTheme,
+  if (!configuration.overrideTheme) {
+    darkModePreference.addEventListener('change', e => {
+      ed.updateOptions({
+        theme: e.matches ? configuration.darkTheme : configuration.lightTheme,
+      })
     })
-  })
+  }
 
   ed.onDidChangeCursorPosition(async (event) => {
     const { documentSymbolProvider } = StandaloneServices.get(ILanguageFeaturesService)
