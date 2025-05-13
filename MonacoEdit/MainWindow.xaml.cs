@@ -30,8 +30,6 @@ namespace MonacoEdit
                 WatchSystemTheme();
                 ApplicationThemeManager.ApplySystemTheme();
             };
-
-            menu.Visibility = App.ShowToolbar ? Visibility.Visible : Visibility.Collapsed;
         }
 
         private void WatchSystemTheme()
@@ -174,6 +172,24 @@ namespace MonacoEdit
         {
             if (textFilename is null) return;
             await LoadText(textFilename);
+        }
+
+        private void SelectLightThemeCommandHandler(object sender, ExecutedRoutedEventArgs e)
+        {
+            editor.Configuration.Theme = Mastersign.WpfCodeEditor.ColorScheme.Light;
+            editor.UpdateColorScheme();
+        }
+
+        private void SelectDarkThemeCommandHandler(object sender, ExecutedRoutedEventArgs e)
+        {
+            editor.Configuration.Theme = Mastersign.WpfCodeEditor.ColorScheme.Dark;
+            editor.UpdateColorScheme();
+        }
+
+        private void SelectAutoThemeCommandHandler(object sender, ExecutedRoutedEventArgs e)
+        {
+            editor.Configuration.Theme = Mastersign.WpfCodeEditor.ColorScheme.Auto;
+            editor.UpdateColorScheme();
         }
     }
 }

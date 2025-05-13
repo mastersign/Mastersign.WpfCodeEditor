@@ -120,4 +120,13 @@
   <data name="Command_Revert" xml:space="preserve">
     <value>Revert</value>
   </data>
+  <data name="Command_SelectDarkTheme" xml:space="preserve">
+    <value>Dark</value>
+  </data>
+  <data name="Command_SelectLightTheme" xml:space="preserve">
+    <value>Light</value>
+  </data>
+  <data name="Command_SelectAutoTheme" xml:space="preserve">
+    <value>Auto</value>
+  </data>
 </root>

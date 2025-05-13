@@ -17,6 +17,9 @@
 
     <ui:FluentWindow.Resources>
         <RoutedUICommand x:Key="Revert" Text="{x:Static p:Resources.Command_Revert}" />
+        <RoutedUICommand x:Key="SelectLightTheme" Text="{x:Static p:Resources.Command_SelectLightTheme}" />
+        <RoutedUICommand x:Key="SelectDarkTheme" Text="{x:Static p:Resources.Command_SelectDarkTheme}" />
+        <RoutedUICommand x:Key="SelectAutoTheme" Text="{x:Static p:Resources.Command_SelectAutoTheme}" />
         <tools:BooleanToVisibilityConverter x:Key="Bool2Visibility" Invisible="Collapsed" />
     </ui:FluentWindow.Resources>
 
@@ -29,6 +32,12 @@
         <CommandBinding Command="{StaticResource Revert}"
                         CanExecute="CanRevertCommandPredicate"
                         Executed="RevertCommandHandler" />
+        <CommandBinding Command="{StaticResource SelectLightTheme}"
+                        Executed="SelectLightThemeCommandHandler" />
+        <CommandBinding Command="{StaticResource SelectDarkTheme}"
+                        Executed="SelectDarkThemeCommandHandler" />
+        <CommandBinding Command="{StaticResource SelectAutoTheme}"
+                        Executed="SelectAutoThemeCommandHandler" />
     </ui:FluentWindow.CommandBindings>
     
     <Grid>
@@ -49,24 +58,50 @@
             </ui:TitleBar.TrailingContent>
         </ui:TitleBar>
 
-        <Menu x:Name="menu" Grid.Row="1" Margin="4,0"
+        <Grid Grid.Row="1" Margin="4,0"
               Visibility="{Binding ShowToolbar, Source={x:Static local:App.Current}, Converter={StaticResource Bool2Visibility}}">
-            <ui:MenuItem 
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <Menu x:Name="menuMain">
+                <MenuItem 
                     x:Name="miOpen"
                     Icon="{ui:SymbolIcon FolderOpen16}"
                     Command="{x:Static ApplicationCommands.Open}"
                     Visibility="{Binding ShowOpen, Source={x:Static local:App.Current}, Converter={StaticResource Bool2Visibility}}"/>
-            <ui:MenuItem
+                <MenuItem
                     x:Name="miRevert"
                     Icon="{ui:SymbolIcon ArrowCounterclockwise16}"
                     Command="{StaticResource Revert}"
                     Visibility="{Binding ShowRevert, Source={x:Static local:App.Current}, Converter={StaticResource Bool2Visibility}}"/>
-            <ui:MenuItem
+                <MenuItem
                     x:Name="miSave"
                     Icon="{ui:SymbolIcon Save16}"
                     Command="{x:Static ApplicationCommands.Save}"
                     Visibility="{Binding ShowSave, Source={x:Static local:App.Current}, Converter={StaticResource Bool2Visibility}}"/>
-        </Menu>
+            </Menu>
+            <Menu x:Name="Right" Grid.Column="1">
+                <MenuItem
+                    x:Name="miTheme"
+                    HorizontalAlignment="Right"
+                    Icon="{ui:SymbolIcon DarkTheme24}">
+                    <MenuItem
+                    x:Name="miThemeLight"
+                    Icon="{ui:SymbolIcon WeatherSunny16}"
+                    Command="{StaticResource SelectLightTheme}" />
+                    <MenuItem
+                    x:Name="miThemeAuto"
+                    Icon="{ui:SymbolIcon Wand16}"
+                    Command="{StaticResource SelectAutoTheme}" />
+                    <MenuItem
+                    x:Name="miThemeDark"
+                    Icon="{ui:SymbolIcon WeatherMoon16}"
+                    Command="{StaticResource SelectDarkTheme}" />
+                </MenuItem>
+            </Menu>
+        </Grid>
 
         <ce:CodeEditor
                 x:Name="editor"

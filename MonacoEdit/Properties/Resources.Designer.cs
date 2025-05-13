@@ -68,5 +68,32 @@ namespace MonacoEdit.Properties {
                 return ResourceManager.GetString("Command_Revert", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Auto ähnelt.
+        /// </summary>
+        public static string Command_SelectAutoTheme {
+            get {
+                return ResourceManager.GetString("Command_SelectAutoTheme", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Dark ähnelt.
+        /// </summary>
+        public static string Command_SelectDarkTheme {
+            get {
+                return ResourceManager.GetString("Command_SelectDarkTheme", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Light ähnelt.
+        /// </summary>
+        public static string Command_SelectLightTheme {
+            get {
+                return ResourceManager.GetString("Command_SelectLightTheme", resourceCulture);
+            }
+        }
     }
 }

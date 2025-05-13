@@ -120,4 +120,13 @@
   <data name="Command_Revert" xml:space="preserve">
     <value>Zurücksetzen</value>
   </data>
+  <data name="Command_SelectDarkTheme" xml:space="preserve">
+    <value>Dunkel</value>
+  </data>
+  <data name="Command_SelectLightTheme" xml:space="preserve">
+    <value>Hell</value>
+  </data>
+  <data name="Command_SelectAutoTheme" xml:space="preserve">
+    <value>Auto</value>
+  </data>
 </root>
